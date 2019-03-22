@@ -30,7 +30,7 @@
 
 #include "bzlib_private.h"
 
-extern FILE* fdopen(int,char*);
+extern FILE* fdopen(int,const char*);
 
 /*---------------------------------------------------*/
 /*--- Compression stuff                           ---*/
