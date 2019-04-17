@@ -260,8 +260,8 @@ main(int argc, char **argv)
 
     buildmode();
 
-    printf("\n*** Testing (create|open)/modify file=%s mode=%s\n", NCFILENAME,
-	   smode(diskmode));
+    printf("\n*** Testing %s: file=%s mode=%s\n",
+	(openfile?"open+modify":"create"),NCFILENAME,smode(diskmode));
     fflush(stdout);
 
     /* case NC_FORMAT_CLASSIC: only test this format */
