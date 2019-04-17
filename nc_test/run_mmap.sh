@@ -41,18 +41,26 @@ echo ""
 echo "**** Testing open files with mmap"
 
 # clear old files
-rm -f tst_diskless3_file.cdl tst_diskless3_memory.cdl
+rm -f tst_diskless3_mmap_create.cdl
+rm -f tst_diskless3_mmap_open.cdl
 
 echo ""
-echo "**** Open and modify file using mmap"
+echo "**** create and modify file using mmap"
 rm -f $FILE3
-${execdir}/tst_diskless3 diskless mmap
-${NCDUMP} $FILE3 >tst_diskless3_memory.cdl
-
+${execdir}/tst_diskless3 mmap persist create
+${NCDUMP} $FILE3 >tst_diskless3_mmap_create.cdl
 # compare
-diff tst_diskless3_file.cdl tst_diskless3_memory.cdl
+diff ref_tst_diskless3_create.cdl tst_diskless3_mmap_create.cdl
+
+echo ""
+echo "**** open and modify file using mmap"
+${execdir}/tst_diskless3 mmap persist open
+${NCDUMP} $FILE3 >tst_diskless3_mmap_open.cdl
+# compare
+diff ref_tst_diskless3_open.cdl tst_diskless3_mmap_open.cdl
 
 # cleanup
-rm -f $FILE3 tst_diskless3_file.cdl tst_diskless3_memory.cdl
+rm -f $FILE3 tst_diskless3_memory.cdl 
+rm -f tst_diskless3_mmap_create.cdl tst_diskless3_mmap_open.cdl
 
 exit
