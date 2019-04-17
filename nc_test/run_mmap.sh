@@ -51,7 +51,7 @@ rm -f $FILE3
 echo XXX1
 ls -lrt
 ${execdir}/tst_diskless3 mmap persist create
-${NCDUMP} $FILE3 >tst_diskless3_mmap_create.cdl
+p${NCDUMP} $FILE3 >tst_diskless3_mmap_create.cdl
 # compare
 diff ${srcdir}/ref_tst_diskless3_create.cdl tst_diskless3_mmap_create.cdl
 
@@ -68,7 +68,6 @@ echo XXX3
 ls -lrt
 
 # cleanup
-rm -f $FILE3 tst_diskless3_memory.cdl 
-rm -f tst_diskless3_mmap_create.cdl tst_diskless3_mmap_open.cdl
+rm -f $FILE3 tst_diskless3_mmap_create.cdl tst_diskless3_mmap_open.cdl
 
 exit
