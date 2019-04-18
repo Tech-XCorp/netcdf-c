@@ -48,8 +48,7 @@ rm -f tst_diskless3_mmap_open.cdl
 echo ""
 echo "**** create and modify file using mmap"
 rm -f $FILE3
-echo XXX1
-ls -lrt
+
 ${execdir}/tst_diskless3 mmap persist create
 ${NCDUMP} $FILE3 >tst_diskless3_mmap_create.cdl
 # compare
@@ -57,17 +56,12 @@ diff ${srcdir}/ref_tst_diskless3_create.cdl tst_diskless3_mmap_create.cdl
 
 echo ""
 echo "**** open and modify file using mmap"
-echo XXX2
-ls -lrt
 ${execdir}/tst_diskless3 mmap persist open
 ${NCDUMP} $FILE3 >tst_diskless3_mmap_open.cdl
 # compare
 diff ${srcdir}/ref_tst_diskless3_open.cdl tst_diskless3_mmap_open.cdl
 
-echo XXX3
-ls -lrt
-
 # cleanup
-rm -f $FILE3 tst_diskless3_mmap_create.cdl tst_diskless3_mmap_open.cdl
+#rm -f $FILE3 tst_diskless3_mmap_create.cdl tst_diskless3_mmap_open.cdl
 
 exit

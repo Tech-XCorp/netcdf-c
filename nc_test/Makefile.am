@@ -109,7 +109,7 @@ CMakeLists.txt
 # These files are created by the tests.
 CLEANFILES = nc_test_*.nc tst_*.nc t_nc.nc large_files.nc		\
 quick_large_files.nc tst_diskless3_file.cdl                             \
-tst_diskless3_mmap_create.cdl tst_diskless3_mmap_open.cdl	        \
+tst_diskless3.nc tst_diskless3_mmap_create.cdl tst_diskless3_mmap_open.cdl \
 tst_diskless4.cdl ref_tst_diskless4.cdl benchmark.nc                    \
 tst_http_nc3.cdl tst_http_nc4.cdl
 
