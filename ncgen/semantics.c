@@ -472,7 +472,7 @@ processeconstrefsR(Symbol* avsym, Datalist* data)
     for(i=0,dlp=data->data;i<data->length;i++,dlp++) {
 	NCConstant* con = *dlp;
 	if(con->nctype == NC_COMPOUND) {
-	    /* Iterate over the sublists; also requires iterating over fields */
+	    /* Iterate over the sublists */
 	    processeconstrefsR(avsym,con->value.compoundv);
 	} else if(con->nctype == NC_ECONST || con->nctype == NC_FILLVALUE) {
 	    fixeconstref(avsym,con);
