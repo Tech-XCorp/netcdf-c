@@ -104,13 +104,13 @@ rm -f tst_diskless3_file.cdl tst_diskless3_memory.cdl
 echo ""
 echo "**** Create baseline cdl"
 rm -f $FILE3
-${execdir}/tst_diskless3 file
+${execdir}/tst_diskless3 file file:$FILE3
 ${NCDUMP} $FILE3 >tst_diskless3_file.cdl
 
 echo ""
 echo "**** Create and modify file using diskless"
 rm -f $FILE3
-${execdir}/tst_diskless3 diskless persist
+${execdir}/tst_diskless3 diskless persist file:$FILE3
 ${NCDUMP} $FILE3 >tst_diskless3_memory.cdl
 
 # compare
