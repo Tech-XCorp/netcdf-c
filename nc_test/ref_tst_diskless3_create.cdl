@@ -1,4 +1,4 @@
-netcdf tst_diskless3 {
+netcdf tst_mmap3 {
 dimensions:
 	Time = UNLIMITED ; // (10 currently)
 variables:

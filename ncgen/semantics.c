@@ -472,7 +472,7 @@ processeconstrefsR(Symbol* avsym, Datalist* data)
     for(i=0,dlp=data->data;i<data->length;i++,dlp++) {
 	NCConstant* con = *dlp;
 	if(con->nctype == NC_COMPOUND) {
-	    /* Iterate over the sublists */
+	    /* Iterate over the sublists; also requires iterating over fields */
 	    processeconstrefsR(avsym,con->value.compoundv);
 	} else if(con->nctype == NC_ECONST || con->nctype == NC_FILLVALUE) {
 	    fixeconstref(avsym,con);
@@ -501,7 +501,7 @@ fixeconstref(Symbol* avsym, NCConstant* con)
 	    varsym = NULL;
     }
     
-    if(basetype->objectclass != NC_TYPE && basetype->subclass != NC_ENUM)
+    if(basetype->objectclass != NC_TYPE || basetype->subclass != NC_ENUM)
         semerror(con->lineno,"Enumconstant associated with a non-econst type");
 
     if(con->nctype == NC_FILLVALUE) {

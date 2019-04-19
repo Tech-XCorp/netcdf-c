@@ -82,6 +82,7 @@ if test -f $FILE2 ; then
 else
   echo "#### $FILE2 not created"
 fi
+exit
 rm -f tmp1.cdl tmp2.cdl tmp1.nc tmp2.nc
 
 if test "x$ok" = xyes ; then
@@ -114,6 +115,6 @@ ${NCDUMP} $FILE3 >tst_diskless3_memory.cdl
 diff tst_diskless3_file.cdl tst_diskless3_memory.cdl
 
 # cleanup
-rm -f $FILE3 tst_diskless3_file.cdl tst_diskless3_memory.cdl
+rm -f $FILE1 $FILE2 $FILE3 tst_diskless3_file.cdl tst_diskless3_memory.cdl
 
 exit 0

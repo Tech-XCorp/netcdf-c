@@ -12,9 +12,8 @@ CPU=`uname -p`
 OS=`uname`
 
 #Constants
-FILE1=tst_diskless.nc
-FILE2=tst_diskless2.nc
-FILE3=tst_diskless3.nc
+FILE1=tst_mmap1.nc
+FILE3=tst_mmap3.nc
 
 echo ""
 echo "*** Testing create files with mmap"
@@ -26,7 +25,7 @@ echo "PASS: create mmap netCDF classic file without persistence"
 echo ""
 echo "**** Test create mmap netCDF classic file with persistence"
 rm -f $FILE1
-${execdir}/tst_diskless mmap persist
+${execdir}/tst_diskless mmap persist file:tst_mmap1.nc
 if test -f $FILE1 ; then
 echo "**** $FILE1 created"
 # ${NCDUMP} $FILE1
@@ -62,6 +61,6 @@ ${NCDUMP} $FILE3 >tst_diskless3_mmap_open.cdl
 diff ${srcdir}/ref_tst_diskless3_open.cdl tst_diskless3_mmap_open.cdl
 
 # cleanup
-#rm -f $FILE3 tst_diskless3_mmap_create.cdl tst_diskless3_mmap_open.cdl
+rm -f $FILE1 $FILE3 tst_diskless3_mmap_create.cdl tst_diskless3_mmap_open.cdl
 
 exit

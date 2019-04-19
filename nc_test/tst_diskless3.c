@@ -20,7 +20,7 @@
 
 /* Test extending an existing file */
 
-#define NCFILENAME "tst_diskless3.nc"
+#define NCFILENAME "tst_mmap3.nc"
 
 #define ATT_NAME "Atom"
 #define MAX_LEN 7
@@ -48,7 +48,7 @@ static int status = NC_NOERR;
 
 /* Control flags  */
 static int persist, usenetcdf4, mmap, diskless, file, openfile;
-
+static char* filename = NCFILENAME;
 static int diskmode = 0;
 
 #ifdef DBG
@@ -224,6 +224,10 @@ parse(int argc, char** argv)
 	else if(strcmp(argv[i],"persist")==0) persist=1;
 	else if(strcmp(argv[i],"open")==0) openfile=1;
 	else if(strcmp(argv[i],"create")==0) openfile=0;
+	else if(strncmp(argv[i],"file:",strlen("file:"))==0) {
+	    filename = argv[i];
+	    filename += strlen("file:");
+	}
 	/* ignore anything not recognized */
     }
 
@@ -261,7 +265,7 @@ main(int argc, char **argv)
     buildmode();
 
     printf("\n*** Testing %s: file=%s mode=%s\n",
-	(openfile?"open+modify":"create"),NCFILENAME,smode(diskmode));
+	(openfile?"open+modify":"create"),filename,smode(diskmode));
     fflush(stdout);
 
     /* case NC_FORMAT_CLASSIC: only test this format */
@@ -272,15 +276,15 @@ main(int argc, char **argv)
 #ifdef DBG
 	openfile = 0;
 	buildmode();
-        test_two_growing_with_att(NCFILENAME);
+        test_two_growing_with_att(filename);
 	openfile = 1;
 	buildmode();
 #endif
-	test_plus_one(NCFILENAME);
+	test_plus_one(filename);
     } else {/* create */
         printf("*** testing diskless file with two growing record "
 	     "variables, with attributes added...");
-        test_two_growing_with_att(NCFILENAME);
+        test_two_growing_with_att(filename);
     }
     SUMMARIZE_ERR;
 
