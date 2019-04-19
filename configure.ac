@@ -347,7 +347,7 @@ AC_ARG_ENABLE([dap],
 test "x$enable_dap" = xno || enable_dap=yes
 AC_MSG_RESULT($enable_dap)
 
-# We need curl for DAP.
+# We need curl for DAP and byterange
 AC_CHECK_LIB([curl],[curl_easy_setopt],[found_curl=yes],[found_curl=no])
 if test "x$enable_dap" = "xyes" ; then
    AC_SEARCH_LIBS([curl_easy_setopt],[curl curl.dll], [],
