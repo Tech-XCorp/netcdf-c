@@ -46,7 +46,9 @@ are set when opening a binary file on Windows. */
    #define read _read
    #define lseek _lseeki64
 
-   #define fstat _fstat64
+   #if _MSC_VER<1900
+     #define fstat _fstat64
+   #endif
 
    #define off_t __int64
    #define _off_t __int64
