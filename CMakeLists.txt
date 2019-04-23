@@ -9,6 +9,9 @@
 #Minimum required CMake Version
 cmake_minimum_required(VERSION 3.6.1)
 
+# Allow use of Package_ROOT variables
+cmake_policy(SET CMP0074 NEW)
+
 #Project Name
 project(netCDF C)
 set(PACKAGE "netCDF" CACHE STRING "")
