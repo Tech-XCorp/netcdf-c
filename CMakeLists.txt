@@ -411,6 +411,15 @@ IF(NOT MSVC)
   ENDIF(BUILD_FORTRAN)
 ENDIF()
 
+###
+# Whether system has libdl.
+###
+IF(WIN32)
+  set(HAVE_LIBDL FALSE)
+else ()
+  set(HAVE_LIBDL TRUE)
+  set(LIBDL dl)
+endif ()
 
 ###
 # Allow the user to specify libraries

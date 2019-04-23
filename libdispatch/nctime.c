@@ -23,7 +23,11 @@
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#else
 #include "ncconfigure.h"
+#endif
 #include "nctime.h"
 
 static int cuErrOpts;			     /* Error options */
