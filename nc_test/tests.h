@@ -39,15 +39,12 @@
 #define X_SHORT_MAX	32767
 #define X_INT_MIN	(-2147483647-1)
 #define X_INT_MAX	2147483647
-#if defined(FLT_MAX_EXP) && FLT_MAX_EXP < 128
-/* FLT_MAX < X_FLOAT_MAX */
+#ifdef FLT_MAX
 #define X_FLOAT_MAX	FLT_MAX
-#else
-#ifdef WIN32 /* Windows, of course, has to be a *little* different. */
+#elif defined (WIN32)
 #define X_FLOAT_MAX	3.402823466e+38f
 #else
 #define X_FLOAT_MAX	3.40282347e+38f
-#endif /* WIN32 */
 #endif
 #define X_FLOAT_MIN	(-X_FLOAT_MAX)
 #if CRAYFLOAT
