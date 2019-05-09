@@ -569,18 +569,23 @@ ENDIF()
 # Option to Enable HDF5
 #
 # The HDF5 cmake variables differ between platform (linux/osx and Windows),
-# as well as between HDF5 versions.  As a result, this section is a bit convoluted.
+# as well as between HDF5 versions.  As a result, this section is a bit
+# convoluted.
 #
-# Note that the behavior seems much more stable across HDF5 versions under linux,
+# The behavior seems much more stable across HDF5 versions under linux,
 # so we do not have to do as much version-based tweaking.
 #
-# At the end of it, we should have the following defined:
+# At the end of it, we must have defined
+#
+# * HDF5_INCLUDE_DIR
+# * HDF5_LIBRARIES
+# * HDF5_LIBRARY_DIRS
+#
+# as these are in liblib/CMakeLists.txt, but we will also define
 #
 # * HDF5_C_LIBRARY
 # * HDF5_HL_LIBRARY
-# * HDF5_LIBRARIES
-# * HDF5_INCLUDE_DIR
-# *
+#
 ##
 OPTION(USE_HDF5 "Use HDF5." ${ENABLE_NETCDF_4})
 IF(USE_HDF5 OR ENABLE_NETCDF_4)
@@ -593,13 +598,11 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
   # specify HDF5_HL_LIB, HDF5_LIB, HDF5_INCLUDE_DIR manually.
   ##
   IF(HDF5_C_LIBRARY AND HDF5_HL_LIBRARY AND HDF5_INCLUDE_DIR)
-    SET(HDF5_LIBRARIES ${HDF5_C_LIBRARY} ${HDF5_HL_LIBRARY})
-    SET(HDF5_C_LIBRARIES ${HDF5_C_LIBRARY})
-    SET(HDF5_C_LIBRARY_hdf5 ${HDF5_C_LIBRARY})
-    SET(HDF5_HL_LIBRARIES ${HDF5_HL_LIBRARY})
-    INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIR})
     MESSAGE(STATUS "Using HDF5 C Library: ${HDF5_C_LIBRARY}")
     MESSAGE(STATUS "Using HDF5 HL LIbrary: ${HDF5_HL_LIBRARY}")
+    if (NOT HDF5_LIBRARIES)
+      SET(HDF5_LIBRARIES ${HDF5_C_LIBRARY} ${HDF5_HL_LIBRARY})
+    endif ()
   ELSE(HDF5_C_LIBRARY AND HDF5_HL_LIBRARY AND HDF5_INCLUDE_DIR) # We are seeking out HDF5 with Find Package.
     ###
     # For now we assume that if we are building netcdf
@@ -625,12 +628,14 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
     # examples, even though the previous version of what we
     # had worked.
     #####
+    set(HDF5_C_COMPILER_NO_INTERROGATE TRUE) # Does not work for hdf5-1.10.5
     IF(MSVC)
       SET(SEARCH_PACKAGE_NAME ${HDF5_PACKAGE_NAME})
       FIND_PACKAGE(HDF5 NAMES ${SEARCH_PACKAGE_NAME} COMPONENTS C HL NO_MODULES REQUIRED ${NC_HDF5_LINK_TYPE})
     ELSE(MSVC)
       FIND_PACKAGE(HDF5 COMPONENTS C HL REQUIRED)
     ENDIF(MSVC)
+    message(STATUS "FindHDF5 found HDF5_HL_LIBRARIES = ${HDF5_HL_LIBRARIES}, HDF5_LIBRARIES = ${HDF5_LIBRARIES}.  If these are empty, FindHDF5.cmake is failing, and we will have to fix up.")
 
     ##
     # Next, check the HDF5 version. This will inform which
@@ -656,15 +661,6 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
         MESSAGE(STATUS "Found HDF5 libraries version ${HDF5_VERSION}")
       ENDIF()
     ENDIF()
-
-    ##
-    # Include the HDF5 include directory.
-    ##
-    IF(HDF5_INCLUDE_DIRS AND NOT HDF5_INCLUDE_DIR)
-      SET(HDF5_INCLUDE_DIR ${HDF5_INCLUDE_DIRS})
-    ENDIF()
-    MESSAGE(STATUS "Using HDF5 include dir: ${HDF5_INCLUDE_DIR}")
-    INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIR})
 
     ###
     # This is the block where we figure out what the appropriate
@@ -699,17 +695,54 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
       ENDIF()
 
     ENDIF(MSVC)
-    IF(NOT HDF5_C_LIBRARY)
-      SET(HDF5_C_LIBRARY hdf5)
-    ENDIF()
   ENDIF(HDF5_C_LIBRARY AND HDF5_HL_LIBRARY AND HDF5_INCLUDE_DIR)
 
-  FIND_PACKAGE(Threads)
+  message(STATUS "After initial find:")
+  message(STATUS "  HDF5_C_LIBRARY = ${HDF5_C_LIBRARY}.")
+  message(STATUS "  HDF5_C_LIBRARY_hdf5 = ${HDF5_C_LIBRARY_hdf5}.")
+  message(STATUS "  HDF5_hdf5_LIBRARY = ${HDF5_hdf5_LIBRARY}.")
+  message(STATUS "  HDF5_HL_LIBRARY = ${HDF5_HL_LIBRARY}.")
+  message(STATUS "  HDF5_C_HL_LIBRARY = ${HDF5_HL_LIBRARY}.")
+  message(STATUS "  HDF5_HL_LIBRARIES = ${HDF5_HL_LIBRARIES}.")
+  message(STATUS "  HDF5_C_HL_LIBRARIES = ${HDF5_C_HL_LIBRARIES}.")
+  message(STATUS "  HDF5_C_LIBRARY_hl = ${HDF5_C_LIBRARY_hl}.")
 
-  # There is a missing case in the above code so default it
-  IF(NOT HDF5_C_LIBRARY_hdf5 OR "${HDF5_C_LIBRARY_hdf5}" STREQUAL "" )
-    SET(HDF5_C_LIBRARY_hdf5 "${HDF5_C_LIBRARY}")
+  ##
+  # Include the HDF5 include directory.
+  ##
+  IF(HDF5_INCLUDE_DIRS AND NOT HDF5_INCLUDE_DIR)
+    SET(HDF5_INCLUDE_DIR ${HDF5_INCLUDE_DIRS})
   ENDIF()
+  MESSAGE(STATUS "Using HDF5 include dir: ${HDF5_INCLUDE_DIR}")
+  INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIR})
+
+  ##
+  # Fallback on names
+  ##
+  IF(NOT HDF5_C_LIBRARY)
+    SET(HDF5_C_LIBRARY hdf5)
+  ENDIF()
+  IF(NOT HDF5_C_LIBRARY_hdf5)
+    # Below code uses HDF5_C_LIBRARY_hdf5.  Why?
+    SET(HDF5_C_LIBRARY_hdf5 ${HDF5_C_LIBRARY})
+  ENDIF()
+  IF(NOT HDF5_HL_LIBRARY)
+    SET(HDF5_HL_LIBRARY hdf5_hl)
+  ENDIF()
+  IF(NOT HDF5_LIBRARIES)
+    SET(HDF5_LIBRARIES ${HDF5_HL_LIBRARY} ${HDF5_C_LIBRARY})
+  ENDIF()
+
+  ##
+  # Newer versions of FindHDF5.cmake find only the library names
+  ##
+  if (NOT HDF5_LIBRARY_DIRS)
+    get_filename_component(HDF5_LIBRARY_DIRS ${HDF5_INCLUDE_DIRS}/../lib REALPATH)
+  endif ()
+  MESSAGE(STATUS "Using HDF5 library dir: ${HDF5_LIBRARY_DIRS}")
+  link_directories(${HDF5_LIBRARY_DIRS})
+
+  FIND_PACKAGE(Threads)
 
   ###
   # The following options are not used in Windows currently.
@@ -723,14 +756,19 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
     # Use H5Pset_fapl_mpio and H5Pget_fapl_mpio, instead.
     # CHECK_LIBRARY_EXISTS(${HDF5_C_LIBRARY_hdf5} H5Pget_fapl_mpiposix "" HDF5_IS_PARALLEL_MPIPOSIX)
 
-    if (NOT IS_ABSOLUTE ${HDF5_C_LIBRARY_hdf5} AND NOT HDF5_LIBRARY_DIRS)
+    # message(STATUS "HDF5_LIBRARIES = ${HDF5_LIBRARIES}.")
+    # message(STATUS "HDF5_C_LIBRARIES = ${HDF5_C_LIBRARIES}.")
+    # message(STATUS "HDF5_LIBRARY_DIRS = ${HDF5_LIBRARY_DIRS}.")
+    if ((NOT IS_ABSOLUTE ${HDF5_C_LIBRARY_hdf5}) AND (NOT HDF5_LIBRARY_DIRS))
       message(STATUS "HDF5_LIBRARY_DIRS needed but not defined.  Will define.")
       if (HDF5_C_LIBRARIES)
         get_filename_component(HDF5_LIBRARY_DIRS "${HDF5_C_LIBRARIES}" DIRECTORY)
       endif ()
+    else ()
     endif ()
     message(STATUS "HDF5_LIBRARY_DIRS = ${HDF5_LIBRARY_DIRS}.")
 
+    message(STATUS "Checking for H5Pget_fapl_mpio in ${HDF5_C_LIBRARY_hdf5} from ${HDF5_LIBRARY_DIRS}.")
     CHECK_LIBRARY_EXISTS(${HDF5_C_LIBRARY_hdf5} H5Pget_fapl_mpio "${HDF5_LIBRARY_DIRS}" HDF5_IS_PARALLEL_MPIO)
     IF(HDF5_IS_PARALLEL_MPIO)
       SET(HDF5_PARALLEL ON)

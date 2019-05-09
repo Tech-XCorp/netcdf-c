@@ -68,23 +68,7 @@ IF(HAVE_LIBDL)
 ENDIF()
 
 IF(USE_HDF5 OR USE_NETCDF4)
-  IF(NOT MSVC)
-    # Some version of cmake define HDF5_hdf5_LIBRARY instead of
-    # HDF5_LIBRARY. Same with HDF5_HL_LIBRARIES
-    IF(HDF5_hdf5_LIBRARY AND NOT HDF5_C_LIBRARIES)
-      SET(HDF5_C_LIBRARIES ${HDF5_hdf5_LIBRARY})
-    ENDIF()
-    IF(HDF5_hdf5_hl_LIBRARY AND NOT HDF5_HL_LIBRARIES)
-      SET(HDF5_HL_LIBRARIES ${HDF5_hdf5_hl_LIBRARY})
-    ENDIF()
-    # The order of the libraries is important here for static
-    # builds:
-    # Make sure that HDF5_C_LIBRARY appears *after*
-    # HDF5_HL_LIBRARY.
-    SET(TLL_LIBS ${HDF5_HL_LIBRARIES} ${HDF5_C_LIBRARIES} ${TLL_LIBS} ${SZIP_LIBRARY})
-  ELSE() # Windows CMake defines HDF5_LIBRARIES.
-    SET(TLL_LIBS ${HDF5_LIBRARIES} ${TLL_LIBS} ${SZIP_LIBRARY})
-  ENDIF()
+  SET(TLL_LIBS ${HDF5_LIBRARIES} ${TLL_LIBS} ${SZIP_LIBRARY})
 ENDIF()
 
 IF(USE_DAP)
