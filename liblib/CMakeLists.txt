@@ -61,7 +61,7 @@ SET(TLL_LIBS "")
 SET(TLL_LIBS ${TLL_LIBS} ${HAVE_LIBM})
 if (ZLIB_LIBRARY)
   SET(TLL_LIBS ${TLL_LIBS} ${ZLIB_LIBRARY})
-else ()
+elseif (LINUX)
   SET(TLL_LIBS ${TLL_LIBS} z)
 endif ()
 
