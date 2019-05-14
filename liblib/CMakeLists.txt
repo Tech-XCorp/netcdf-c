@@ -58,7 +58,12 @@ ENDIF()
 
 SET(TLL_LIBS "")
 
-SET(TLL_LIBS ${TLL_LIBS} ${HAVE_LIBM} ${ZLIB_LIBRARY})
+SET(TLL_LIBS ${TLL_LIBS} ${HAVE_LIBM})
+if (ZLIB_LIBRARY)
+  SET(TLL_LIBS ${TLL_LIBS} ${ZLIB_LIBRARY})
+else ()
+  SET(TLL_LIBS ${TLL_LIBS} z)
+endif ()
 
 # Add extra dependencies specified via NC_EXTRA_DEPS
 SET(TLL_LIBS ${TLL_LIBS} ${EXTRA_DEPS})

@@ -628,6 +628,11 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
     # examples, even though the previous version of what we
     # had worked.
     #####
+    message(STATUS "HDF5_ROOT = ${HDF5_ROOT}.")
+    if (HDF5_ROOT)
+      set(ENV{HDF5_ROOT} "${HDF5_ROOT}")
+    endif ()
+    message(STATUS "ENV{HDF5_ROOT} = $ENV{HDF5_ROOT}.")
     set(HDF5_C_COMPILER_NO_INTERROGATE TRUE) # Does not work for hdf5-1.10.5
     IF(MSVC)
       SET(SEARCH_PACKAGE_NAME ${HDF5_PACKAGE_NAME})
@@ -714,6 +719,12 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
   IF(HDF5_INCLUDE_DIRS AND NOT HDF5_INCLUDE_DIR)
     SET(HDF5_INCLUDE_DIR ${HDF5_INCLUDE_DIRS})
   ENDIF()
+  IF(HDF5_C_INCLUDE_DIRS AND NOT HDF5_INCLUDE_DIR)
+    SET(HDF5_INCLUDE_DIR ${HDF5_C_INCLUDE_DIRS})
+  ENDIF()
+  IF(HDF5_ROOT AND NOT HDF5_INCLUDE_DIR)
+    SET(HDF5_INCLUDE_DIR ${HDF5_ROOT}/include)
+  ENDIF()
   MESSAGE(STATUS "Using HDF5 include dir: ${HDF5_INCLUDE_DIR}")
   INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIR})
 
@@ -737,12 +748,13 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
   ELSEIF(len LESS 2)
     SET(HDF5_LIBRARIES ${HDF5_HL_LIBRARY} ${HDF5_LIBRARIES})
   ENDIF()
+  message(STATUS "HDF5_LIBRARIES = ${HDF5_LIBRARIES}.")
 
   ##
   # Newer versions of FindHDF5.cmake find only the library names
   ##
-  if (NOT HDF5_LIBRARY_DIRS)
-    get_filename_component(HDF5_LIBRARY_DIRS ${HDF5_INCLUDE_DIRS}/../lib REALPATH)
+  if (HDF5_INCLUDE_DIR AND NOT HDF5_LIBRARY_DIRS)
+    get_filename_component(HDF5_LIBRARY_DIRS ${HDF5_INCLUDE_DIR}/../lib REALPATH)
   endif ()
   MESSAGE(STATUS "Using HDF5 library dir: ${HDF5_LIBRARY_DIRS}")
   link_directories(${HDF5_LIBRARY_DIRS})
@@ -775,8 +787,11 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
 
     message(STATUS "Checking for H5Pget_fapl_mpio in ${HDF5_C_LIBRARY_hdf5} from ${HDF5_LIBRARY_DIRS}.")
     CHECK_LIBRARY_EXISTS(${HDF5_C_LIBRARY_hdf5} H5Pget_fapl_mpio "${HDF5_LIBRARY_DIRS}" HDF5_IS_PARALLEL_MPIO)
-    IF(HDF5_IS_PARALLEL_MPIO)
+    IF(HDF5_IS_PARALLEL_MPIO OR (ENABLE_PARALLEL AND HDF5_ROOT))
       SET(HDF5_PARALLEL ON)
+      if (HDF5_PARALLEL AND NOT HDF5_IS_PARALLEL_MPIO)
+        message(STATUS "H5Pget_fapl_mpio not found, but setting HDF5_PARALLEL since user specified HDF5_ROOT.")
+      endif ()
     ELSE()
       SET(HDF5_PARALLEL OFF)
     ENDIF()
