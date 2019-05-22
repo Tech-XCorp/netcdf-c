@@ -59,10 +59,13 @@ ENDIF()
 SET(TLL_LIBS "")
 
 SET(TLL_LIBS ${TLL_LIBS} ${HAVE_LIBM})
+message(STATUS "ZLIB_LIBRARY = ${ZLIB_LIBRARY}.")
 if (ZLIB_LIBRARY)
   SET(TLL_LIBS ${TLL_LIBS} ${ZLIB_LIBRARY})
-elseif (LINUX)
+elseif (LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Linux") # For cray
   SET(TLL_LIBS ${TLL_LIBS} z)
+else ()
+  message(STATUS "Neither ZLIB_LIBRARY nor Linux.")
 endif ()
 
 # Add extra dependencies specified via NC_EXTRA_DEPS
