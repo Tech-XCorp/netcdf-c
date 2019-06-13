@@ -772,8 +772,9 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
 
   ###
   # The following options are not used in Windows currently.
+  # JRC: Adding Windows in.
   ###
-  IF(NOT MSVC)
+  # IF(NOT MSVC)
     # Find out if HDF5 was built with parallel support.
     # Do that by checking for the targets H5Pget_fapl_mpiposx and
     # H5Pget_fapl_mpio in ${HDF5_LIB}.
@@ -808,7 +809,7 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
 
     #Check to see if HDF5 library has collective metadata APIs, (HDF5 >= 1.10.0)
     CHECK_LIBRARY_EXISTS(${HDF5_C_LIBRARY_hdf5} H5Pset_all_coll_metadata_ops "${HDF5_LIBRARY_DIRS}" HDF5_HAS_COLL_METADATA_OPS)
-  ENDIF(NOT MSVC)
+  # ENDIF(NOT MSVC)
 
   #Check to see if H5Z_SZIP exists in HDF5_Libraries. If so, we must use szip.
   CHECK_LIBRARY_EXISTS(${HDF5_C_LIBRARY_hdf5} H5Z_SZIP "${HDF5_LIBRARY_DIRS}" USE_SZIP)
@@ -829,9 +830,13 @@ IF(USE_HDF5 OR ENABLE_NETCDF_4)
   CHECK_LIBRARY_EXISTS(${HDF5_C_LIBRARY_hdf5} H5resize_memory "${HDF5_LIBRARY_DIRS}" HDF5_HAS_RESIZE_MEMORY)
 
   IF(HDF5_PARALLEL)
-	SET(HDF5_CC h5pcc)
+    SET(HDF5_CC h5pcc)
+    find_package(MPI)
+    message(STATUS "MPI_C_INCLUDE_DIRS = ${MPI_C_INCLUDE_DIRS}.")
+    include_directories(${MPI_C_INCLUDE_DIRS})
+    message(STATUS "MPI_C_LIBRARIES = ${MPI_C_LIBRARIES}.")
   ELSE()
-	SET(HDF5_CC h5cc)
+    SET(HDF5_CC h5cc)
   ENDIF()
 
   SET(H5_USE_16_API 1)
